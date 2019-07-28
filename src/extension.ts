@@ -1,9 +1,14 @@
 'use strict';
 import { window, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem } from 'vscode';
 import * as WebSocket from 'ws';
+import * as vscode from 'vscode';
+import { GMusicQueue } from './GMusicQueue';
 
 export function activate(context: ExtensionContext) {
     let gMusic = new gMusicClass(context);
+
+    const gMusicQueueProvider = new GMusicQueue(context, gMusic);
+	vscode.window.registerTreeDataProvider('gMusicQueue', gMusicQueueProvider);
 
     let playpauseCommand = commands.registerCommand('gmusic.playpause', () => {
         gMusic.togglePlay();
@@ -54,7 +59,7 @@ interface track {
     albumArt: string;
 }
 
-interface gMusicResponse {
+export interface gMusicResponse {
     channel: string;
     payload: any;
 }
@@ -79,7 +84,7 @@ export class gMusicClass {
     private _shuffle: string;
     private _repeat: string;
     private _onChange: any;
-    private ws: any;
+    public ws: WebSocket;
 
     constructor(context: ExtensionContext) {
         const Cache = require('vscode-cache');
@@ -111,7 +116,7 @@ export class gMusicClass {
 
         // Receiving data from GPMDP.
         this.ws.on('message', (data) => {
-            let gMusicResponse: gMusicResponse = JSON.parse(data);
+            let gMusicResponse: gMusicResponse = JSON.parse(data.toString());
             switch (gMusicResponse.channel) {
                 case 'connect':
                     if (gMusicResponse.payload === 'CODE_REQUIRED') {

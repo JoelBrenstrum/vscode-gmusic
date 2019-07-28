@@ -35,6 +35,23 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "google-music",
+                    "title": "Google Music",
+                    "icon": "media/icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "google-music": [
+                {
+                    "id": "gMusicQueue",
+                    "name": "Queue"
+                }
+            ]
+        },
         "commands": [
             {
                 "command": "gmusic.playpause",
@@ -72,6 +89,7 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
+        "@types/ws": "^6.0.1",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6"
     },
